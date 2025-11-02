@@ -49,10 +49,8 @@ I searched this query in github.
 
 And I find Kestra project.
 
-I knew this project. I used n8n for team 생산성 향상을 위해 회사에서 사용해봤다.
-
-This is familar with code more than a n8n.(n8n보다 코드 친화적이다.)
-
+I already knew about this project — I once used n8n at work to improve team productivity.
+Kestra feels more code-oriented than n8n.
 
 ## My Contribution
 
