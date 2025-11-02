@@ -1,7 +1,6 @@
 ---
 title: Start contributing to open source
 description: The Growth Journey of a Junior Developer
-author: cotes
 date: 2025-11-02 11:33:00 +0900
 categories: [Develop, Study]
 tags: [java,open source,kestra, good first issue]
