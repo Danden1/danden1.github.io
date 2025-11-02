@@ -100,7 +100,7 @@ public String icon(Class<?> cls) {
 }
 ```
 
-I fountthis design interesting because it allows icons to be modified easility - thanks to this structure, I didn't have to change the icon code itself.
+I found this design interesting because it allows icons to be modified easility - thanks to this structure, I didn't have to change the icon code itself.
 
 The backend is built with Micronaut, which was completely new to me since I had only used Spring before.
 
