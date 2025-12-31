@@ -42,7 +42,7 @@ Currently, I am implementing an AI agent at my company.
 I am studying various AI-related topics such as context engineering with ACE, A2A communication, and how to select the most suitable agent in an A2A environment.
 These approaches help reduce human error and eliminate repetitive, tedious tasks.
 
-External Activities and Side Projects
+## External Activities and Side Projects
 
 As a side project, I am developing an education platform.
 At my current job, I have learned a lot about handling large-scale traffic, but the business logic is relatively simple and mostly focused on delivering JSON responses.
