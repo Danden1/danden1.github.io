@@ -247,50 +247,23 @@ The most important correction is that steps 3-5 choose a parent. Step 11 control
 
 ## Conclusion
 
-### Applying this to my recommendation agent
+### What I am trying
 
-The official FAQ lists model migration as a GEPA use case: keep the program structure, switch the task model, and optimize the prompt again. That is close to my situation, but my recommendation agent has several competing requirements.
+The official FAQ lists model migration as a GEPA use case: switch the task model, keep the program structure, and optimize the prompt again. That is close to my situation.
 
-Suppose a user asks for inexpensive products. Price should not be the only signal. The agent may also need to consider their usual food choices and discount history, then explain the trade-off. GEPA cannot discover that policy from a vague success score. I need to make it visible in the dataset and evaluator.
+I first considered two seeds. One was the existing prompt, including parts tuned for the previous model. The other was a minimal prompt that described the task and output format with as few tokens as possible.
 
-A useful example may need to contain:
+The [FAQ's seed guidance](https://gepa-ai.github.io/gepa/guides/faq/#how-does-the-seed-prompt-affect-optimization) gave me a useful boundary. I keep the task rules, tool constraints, and output contract. I leave the exact procedure and wording open to optimization. I also keep the original prompt as a baseline.
 
-- the user's request;
-- the preference information the agent is allowed to use;
-- the available products and discounts;
-- the hard constraints that must not be violated;
-- an expected ranking or a human-written assessment;
-- an explanation of why the expected behavior is correct.
+Prompt length needs its own constraint. [GEPA does not optimize for brevity by default](https://gepa-ai.github.io/gepa/guides/faq/#does-gepa-aim-for-brevity-in-prompts), and early candidates can be long. I plan to measure token cost, limit proposal length, and ask for small targeted edits rather than full rewrites.
 
-Code could reject unavailable products or malformed output. An LLM judge could assess whether the ranking balances the request with the user's preferences and whether the explanation stays grounded in the data.
+### Why evaluation is still difficult
 
-GEPA can optimize against those signals. It cannot remove the need to define them.
+Consider a hypothetical recommendation system. This is only an example, not a description of my agent. A user might ask for the cheapest option, while the product policy could require the system to balance price with permitted preference signals and explain the trade-off.
 
-### Choosing a seed without losing token savings
+A deterministic evaluator could check hard constraints. An LLM judge could assess the recommendation and explanation. GEPA can optimize against those signals, but it cannot decide what the product should value. That policy must already be visible in the dataset and evaluator.
 
-I first considered two seeds. One was the existing prompt, including parts tuned for the previous model. The other was a minimal prompt that described the job and response format with almost no modifiers. I sometimes call this a "caveman" style because it uses as few tokens as possible.
-
-The [FAQ's guidance on seed prompts](https://gepa-ai.github.io/gepa/guides/faq/#how-does-the-seed-prompt-affect-optimization) gave me a better boundary. A good seed contains the ground rules and constraints a smart human would need. It leaves out process details that the model should discover through practice.
-
-I have started tuning again with that boundary. I keep the business rules, tool constraints, and output contract. I leave the exact procedure and wording open to optimization. I also keep the original prompt as a baseline. Model-specific reminders and repeated instructions are candidates for removal, but only after testing.
-
-The [official FAQ is direct about prompt length](https://gepa-ai.github.io/gepa/guides/faq/#does-gepa-aim-for-brevity-in-prompts). GEPA does not optimize for brevity unless brevity is part of the objective. Early candidates can be long. They may also copy details from the first training examples they see.
-
-Later iterations may produce more general rules, but that does not replace a token constraint. The documentation suggests several controls:
-
-- add prompt length or token cost as an evaluation objective;
-- add an explicit maximum length to the reflection prompt;
-- tell the proposer not to copy example-specific names or phrases;
-- preserve fixed output schemas and task rules through explicit constraints;
-- ask for the smallest targeted edit instead of a complete rewrite.
-
-For a production prompt, I prefer the smallest reviewable edit. The FAQ also suggests a human-written instruction library, with a custom proposal function selecting rules instead of generating unrestricted text.
-
-### The dataset is still the hard part
-
-The [official FAQ says GEPA can work with very few examples](https://gepa-ai.github.io/gepa/guides/faq/#can-gepa-work-with-very-few-examples) and recommends roughly 30 to 300 for better results. My problem is not only the count. The data must cover low prices, strong or sparse preferences, conflicting signals, unavailable discounts, and explanation quality. The validation set must also represent real traffic.
-
-For a tool-using agent, a dataset entry is not just a user question and a final answer. The final response may depend on several intermediate steps:
+The [official FAQ recommends roughly 30 to 300 examples](https://gepa-ai.github.io/gepa/guides/faq/#can-gepa-work-with-very-few-examples) for better results. The number alone is not enough. For a tool-using agent, the data may also need the path from input to final answer:
 
 ```text
 User request
@@ -302,33 +275,22 @@ User request
 -> evaluation feedback
 ```
 
-The [official guidance on agent traces](https://gepa-ai.github.io/gepa/guides/faq/#how-should-i-serialize-agent-traces-for-gepa) recommends recording relevant state changes, decisions, outputs, and failures. I therefore need examples of both the final answer and the steps that produced it. Those examples should cover empty tool responses, tool errors, mismatched products, conflicting preferences, and misleading discounts.
+The [trace guidance](https://gepa-ai.github.io/gepa/guides/faq/#how-should-i-serialize-agent-traces-for-gepa) recommends recording relevant state changes, decisions, outputs, and failures. The feedback must also identify where the failure happened. Otherwise, the reflection model may try to fix the wrong step.
 
-The feedback must also locate the failure. If the tool returned the right products but the answer ranked them incorrectly, the reflection model should not change the tool call. If the tool request was wrong, writing feedback will not fix it. The full trajectory makes this distinction possible.
+This brought back a lesson from my year-long undergraduate internship in a computer vision lab. It was easy to focus on the model and training code, but dataset quality often decided what the model could learn. GEPA changes prompts instead of weights, but it still learns only from the examples and feedback I provide.
 
-This brought back a lesson from my year-long undergraduate internship in a computer vision lab. It was easy to focus on the model and training code, but dataset quality often decided what the model could learn and whether an evaluation meant anything. GEPA changes prompts instead of weights, but it still learns only from the examples and feedback I provide.
+### My next step
 
-### My first experiment
+I will start with a narrow experiment:
 
-I plan to start with a narrow experiment rather than optimize the whole agent at once.
+1. Keep the current agent flow and the smaller task model.
+2. Use the existing prompt as a baseline and optimize one prompt first.
+3. Build a small dataset with the relevant tool trajectory.
+4. Combine deterministic checks with an LLM judge.
+5. Track prompt length and use separate feedback, validation, and test data.
+6. Review accepted prompts and run regression cases before deployment.
 
-1. Keep the current agent flow and use the smaller task model.
-2. Preserve the task rules, tool contracts, and output format in the seed. Keep the original prompt as a baseline.
-3. Start with one prompt and a small set of recommendation scenarios.
-4. Capture the complete tool trajectory.
-5. Use code for hard constraints and an LLM judge for recommendation quality.
-6. Track prompt length and keep separate feedback, validation, and test data.
-7. Review every accepted prompt and check the final result on untouched test and regression cases.
-
-This will not prove that GEPA works for the entire agent. It will show whether my evaluation signal can improve one part of it.
-
-### What I learned
-
-GEPA became easier to understand once I separated two decisions. Pareto selection chooses the parent. The minibatch comparison decides whether its child enters the pool.
-
-For my agent, the mutation algorithm is not the hardest part. I first need realistic examples and feedback that identifies which step failed. I also need to measure recommendation quality and token cost without rewarding the wrong behavior.
-
-I am still tuning the prompt, and I remain skeptical about whether the result will be reliable enough to adopt. I cannot claim that GEPA works for my agent yet. This does not contradict the paper, which uses defined benchmarks and metrics. It means that, in my case, the immediate bottleneck is the dataset and evaluator.
+I am still tuning the prompt, and I remain skeptical about whether the result will be reliable enough to adopt. My first goal is only to test one well-defined prompt. For now, the main bottleneck is not GEPA's mutation algorithm. It is building a dataset and evaluator that reward the behavior I actually want.
 
 ### References
 
