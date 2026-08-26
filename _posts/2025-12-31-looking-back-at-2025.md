@@ -27,8 +27,6 @@ That mindset led me to contribute to the ShedLock project.
 
 ## Applying AI in Practice
 
-Applying AI in Practice
-
 In addition, I worked on improving team productivity by using AI and n8n.
 Examples include service history summarization, ticket root-cause analysis with alerts, and resource trend analysis.
 Through these efforts, I learned how to use AI effectively in real-world workflows.
@@ -36,27 +34,25 @@ Through these efforts, I learned how to use AI effectively in real-world workflo
 When dealing with service issues, I often asked AI for help and was able to resolve problems more efficiently.
 Rather than accepting the answers blindly, I reviewed the actual code myself to evaluate the suggestions critically.
 
-As a result of these efforts, I was selected as the second top performer within my business division.
+As a result of these efforts, I ranked second within my business division.
 
-Currently, I am implementing an AI agent at my company.
-I am studying various AI-related topics such as context engineering with ACE, A2A communication, and how to select the most suitable agent in an A2A environment.
-These approaches help reduce human error and eliminate repetitive, tedious tasks.
+Currently, I am developing an AI agent at my company.
+I am studying various AI-related topics, such as context engineering with ACE, A2A communication, and selecting the most suitable agent in an A2A environment.
+My goal is to use these ideas to reduce human error and repetitive work.
 
 ## External Activities and Side Projects
 
 As a side project, I am developing an education platform.
 At my current job, I have learned a lot about handling large-scale traffic, but the business logic is relatively simple and mostly focused on delivering JSON responses.
 
-Through this side project, I have been able to explore new challenges and learn a great deal.
-I learned about Server-Sent Events (SSE) for notifications, and through that process, I also gained an understanding of Spring’s @TransactionalEventListener.
+This side project has given me a chance to work on problems that I do not encounter in my day job.
+I learned about Server-Sent Events (SSE) for notifications, and through that process, I also gained an understanding of Spring’s `@TransactionalEventListener`.
 (Of course, additional logic is required to properly handle data consistency and retries.)
 
 ## Conclusion
 
 This year was truly the year of AI.
 
-I learned that when something feels inconvenient, it is important to dig deeper.
-In many cases, similar logic can be applied and reused in other systems and contexts.
+I learned not to stop at a workaround when something feels inconvenient. Looking into the underlying problem often revealed ideas that I could apply elsewhere.
 
-Beyond internal company work, I also learned a great deal through external activities, including exposure to different domains and collaboration styles.
-I strongly recommend participating in external activities whenever possible.
+Activities outside work also exposed me to different domains and collaboration styles. I would recommend taking part in them when the opportunity comes up.

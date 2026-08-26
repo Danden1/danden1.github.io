@@ -12,17 +12,17 @@ math: true
 
 I'm a backend developer with 2 years of experience.
 
-At my company, I have used MongoDB, Redis and Kafka.
+At my company, I have used MongoDB, Redis, and Kafka.
 
-Most of theses systems write data to a primary(master, leader) node and then replicate it asynchronously to secondary nodes.
+Most of these systems write data to a primary node (also called a master or leader) and then replicate it asynchronously to secondary nodes.
 
-If a client reads from a secondary node before the replication is completed, it may read data that is not consistent.
+If a client reads from a secondary node before replication is complete, it may read inconsistent data.
 
-Beause of this, I started studying data consistency.
+Because of this, I started studying data consistency.
 
 ## Data Consistency in Redis
 
-Redis cluster consist of a master and replica nodes.
+A Redis Cluster consists of master and replica nodes.
 
 ```
                  Redis Cluster 
@@ -50,11 +50,11 @@ Redis cluster consist of a master and replica nodes.
 
 Redis asynchronously replicates data. 
 
-Redis WAIT is a command that delays the completion of write operation until a specified number of replicas have acknowledged the write, or until a given timeout expires. It is used to reduce replicat lag and imporve data durability.
+Redis WAIT is a command that delays the completion of a write operation until a specified number of replicas have acknowledged the write or a given timeout expires. It is used to reduce replication lag and improve data durability.
 
-But It does not provide strong consistency.
+However, it does not provide strong consistency.
 
-[Not guarantee strong consistency](https://redis.io/docs/latest/operate/oss_and_stack/management/scaling/)
+[Does not guarantee strong consistency](https://redis.io/docs/latest/operate/oss_and_stack/management/scaling/)
 
 
 ## Data Consistency in MongoDB
@@ -82,20 +82,20 @@ For example:
 
 ## Data Consistency in Kafka
 
-Kafka uses a leader - follower architecture for each partition.
+Kafka uses a leader-follower architecture for each partition.
 
-All writes to go the leader partition, and the follower replicas pull data from the leader to stay synchronized. Followers periodically fetch the leaders' log and append the new records to their own local log.
+All writes go to the partition leader, and the follower replicas pull data from the leader to stay synchronized. Followers periodically fetch the leader's log and append new records to their own local logs.
 
 To ensure data consistency, Kafka provides Acks and ISR.
 
-### ISR(In-Sync Replica)
+### ISR (In-Sync Replica)
 
 The ISR consists of the leader and all follower replicas that are sufficiently caught up with the leader’s log.
 If a follower falls too far behind, Kafka removes it from the ISR.
 
 ### Acks
 - acks=0: The producer does not wait for any acknowledgment.
-- acks=1: The leader acknowledges the write after writing the record. Follwoers may not have replicated it yet.
+- acks=1: The leader acknowledges the write after writing the record. Followers may not have replicated it yet.
 - acks=all(-1): The leader waits for all ISR to replicate the write before acknowledging.
 
 
@@ -105,8 +105,8 @@ If a follower falls too far behind, Kafka removes it from the ISR.
 
 I studied how these distributed systems (MongoDB, Redis, Kafka) ensure data consistency. 
 
-I believe they use fundamentally similar logic to ensure data consistency.
+I believe they use fundamentally similar mechanisms to ensure data consistency.
 
-This exploration confirmed the **profound importance of Computer Science (CS) fundamentals**. 
+This exploration reinforced the **importance of computer science (CS) fundamentals**.
 
-**This experience showed me that by diving deep into one core concept, I can immediately see its application in seemingly different technologies.**
+I learned that studying one core concept deeply can make it easier to recognize the same ideas in other technologies.

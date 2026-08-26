@@ -21,11 +21,11 @@ In this post, I will explain the methods I used or considered to reduce token us
 
 The most important lesson for me was simple:
 
-> Do not only optimize the prompt. Optimize the whole agent flow.
+> Do not just optimize the prompt. Optimize the whole agent flow.
 
 ## Prompt Caching
 
-Prompt caching is one of the easiest ways to reduce input-token cost and latency.
+Prompt caching is one of the easiest ways to reduce input token costs and latency.
 
 In many agents, the beginning of the prompt is almost always the same. For example:
 
@@ -70,7 +70,7 @@ If a dynamic value such as the current time is placed near the top, it can chang
 
 ### OpenAI and Anthropic
 
-Provider behavior is different.
+Provider behavior varies.
 
 For OpenAI models, prompt caching is handled automatically when the request meets the caching requirements. I still need to design the prompt carefully so that the stable prefix can be reused.
 
@@ -80,9 +80,7 @@ The important point is that prompt caching is not free magic. Each provider has 
 
 ## Reducing LLM Calls Through Tool Design
 
-The next optimization is more important than prompt caching.
-
-It is reducing the number of LLM calls.
+The next optimization—reducing the number of LLM calls—is more important than prompt caching.
 
 In an agent, a single user request can cause multiple model calls. This happens because the model may first decide which tool to call, then the tool runs, and then the result is sent back to the model.
 
@@ -118,7 +116,7 @@ result = agent.invoke(
 )
 ```
 
-This example is intentionally simple. The important part is not the weather tool. The important part is that the tool name, description, and schema are given to the model, and the model decides whether to call the tool.
+This is a simple example, but it shows the main idea: the model receives the tool name, description, and schema, then decides whether to call it.
 
 ### Tool Design Mistake: Too Many Small Tools
 
@@ -167,7 +165,7 @@ This helped reduce both token usage and response time.
 
 ## Data Format
 
-Another useful method is changing the data format returned by tools.
+Another useful method is to change the data format returned by tools.
 
 JSON is easy to use, but it can contain many repeated field names.
 
@@ -190,7 +188,7 @@ For example:
 }
 ```
 
-In this small example, the field names `id`, `name`, and `price` are repeated for every item. With a small response, this is not a big issue. But with many rows, repeated field names can increase input tokens.
+In this small example, the field names `id`, `name`, and `price` are repeated for every item. With a small response, this is not a big issue. But with many rows, repeated field names can increase the number of input tokens.
 
 Depending on the domain, a more compact format may be better.
 
@@ -290,16 +288,16 @@ These questions helped me think about the agent as a production system, not just
 
 ## Conclusion
 
-AI agents are convenient, but token usage is very important.
+AI agents can be useful, but their token usage matters.
 
-If I build everything directly with a custom LLM pipeline, I may be able to optimize cost and latency more aggressively. However, in many real projects, developers use model APIs and agent frameworks. In that environment, design decisions around prompts, tools, and data flow become very important.
+Building a custom LLM pipeline might allow more aggressive optimization of cost and latency. In many real projects, however, developers use model APIs and agent frameworks. In that environment, decisions about prompts, tools, and data flow have a large impact.
 
 This is even more important when the service is offered to customers. A poorly designed agent can become expensive very quickly. In the worst case, the business can lose money every time users interact with the agent.
 
-While working on this, I also became more impressed by GPT and Claude. They handle large contexts, many users, and complex instructions at a very high level. At the same time, I became curious about how large AI products manage context, cost, and quality internally.
+While working on this, I also became more impressed by GPT and Claude. They handle large contexts, many users, and complex instructions remarkably well. At the same time, I became curious about how large AI products manage context, cost, and quality internally.
 
 I am not an AI researcher. There may be more advanced methods, such as reinforcement learning or supervised fine-tuning, depending on the problem. At the MS AI Tour I attended earlier this year, I heard that only a small number of teams were using RL or SFT in production. That made me think that many teams may still be solving these problems with engineering design first.
 
 For now, my biggest takeaway is this:
 
-> In my opinion, token reduction is not just a prompt engineering problem. It is also an application design problem.
+> Token reduction is not just a prompt engineering problem. It is also an application design problem.

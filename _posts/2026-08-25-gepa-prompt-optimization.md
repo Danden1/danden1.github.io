@@ -20,7 +20,7 @@ This avoids weight training, but it is not free. GEPA still requires task-model 
 
 Across six tasks, the paper reports that GEPA beat GRPO by 6% on average and by up to 20%. It also used up to 35 times fewer rollouts. These results come from the paper's experimental settings. They do not guarantee that every GEPA run will be cheaper or faster.
 
-I have not completed the experiment on my agent yet. This post covers the algorithm, what I initially misunderstood, and what I still need to apply it.
+I have not completed the experiment with my agent yet. This post covers the algorithm, what I initially misunderstood, and what I still need to do before I can apply it.
 
 ## How GEPA works
 
@@ -29,7 +29,7 @@ Figure 3 summarizes the complete loop.
 ![Overview of the GEPA optimization loop](/assets/img/posts/gepa/gepa-overview.png)
 _The complete GEPA workflow from the [GEPA paper](https://arxiv.org/abs/2507.19457), Figure 3._
 
-GEPA scores the candidate pool, applies the Pareto filter, and selects a parent. It then proposes a new candidate and tests it on a minibatch. An improved candidate is evaluated on the full selection set and added to the pool. Figure 3 also shows GEPA+Merge, but this post follows the standard reflective-mutation path.
+GEPA scores the candidate pool, applies the Pareto filter, and selects a parent. It then proposes a new candidate and tests it on a minibatch. An improved candidate is evaluated on the full selection set and added to the pool. Figure 3 also shows GEPA+Merge, but this post follows the standard reflective mutation path.
 
 Figure 4 provides the pseudocode behind that overview.
 
@@ -111,7 +111,7 @@ If the system has one prompt, round-robin has no practical effect. The same prom
 
 ### 5. Sample a feedback minibatch
 
-GEPA samples `b` examples from `D_feedback`; the paper experiments use three. It runs the parent and collects inputs, outputs, tool or module traces, scores, errors, and textual feedback. The paper calls model-generated steps the execution trace and evaluator output the evaluation trace. Both provide more information than a score alone.
+GEPA samples `b` examples from `D_feedback`; the experiments in the paper use three. It runs the parent and collects inputs, outputs, tool or module traces, scores, errors, and textual feedback. The paper calls model-generated steps the execution trace and evaluator output the evaluation trace. Both provide more information than a score alone.
 
 ### 6. Evaluate the outputs with a custom evaluator
 
@@ -141,7 +141,7 @@ The child is evaluated on the same feedback minibatch as its parent. Under the d
 
 ## Conclusion
 
-### What I am trying
+### What I Plan to Try
 
 The official FAQ lists model migration as a GEPA use case: switch the task model, keep the program structure, and optimize the prompt again. That is close to my situation.
 
