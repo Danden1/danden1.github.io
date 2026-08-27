@@ -20,7 +20,7 @@ This avoids weight training, but it is not free. GEPA still requires task-model 
 
 Across six tasks, the paper reports that GEPA beat GRPO by 6% on average and by up to 20%. It also used up to 35 times fewer rollouts. These results come from the paper's experimental settings. They do not guarantee that every GEPA run will be cheaper or faster.
 
-I have not completed the experiment with my agent yet. This post covers the algorithm, what I initially misunderstood, and what I still need to do before I can apply it.
+I have now completed two initial runs, but the results were not reliable enough to adopt. This post covers the algorithm, what I initially misunderstood, and why a higher evaluation score did not lead to better responses.
 
 ## How GEPA works
 
@@ -141,21 +141,38 @@ The child is evaluated on the same feedback minibatch as its parent. Under the d
 
 ## Conclusion
 
-### What I Plan to Try
+### What I tried
 
 The official FAQ lists model migration as a GEPA use case: switch the task model, keep the program structure, and optimize the prompt again. That is close to my situation.
 
-I first considered two seeds. One was the existing prompt, including parts tuned for the previous model. The other was a minimal prompt that described the task and output format with as few tokens as possible.
+I compared two starting points. The first was the prompt I had already been using. The second was a much smaller prompt that contained only high-level guidelines.
 
 The [FAQ's seed guidance](https://gepa-ai.github.io/gepa/guides/faq/#how-does-the-seed-prompt-affect-optimization) gave me a useful boundary. I keep the task rules, tool constraints, and output contract. I leave the exact procedure and wording open to optimization. I also keep the original prompt as a baseline.
 
-Prompt length needs its own constraint. [GEPA does not optimize for brevity by default](https://gepa-ai.github.io/gepa/guides/faq/#does-gepa-aim-for-brevity-in-prompts), and early candidates can be long. I plan to measure token cost, limit proposal length, and ask for small targeted edits rather than full rewrites.
+Prompt length needs its own constraint. [GEPA does not optimize for brevity by default](https://gepa-ai.github.io/gepa/guides/faq/#does-gepa-aim-for-brevity-in-prompts), and early candidates can be long. I tracked token count alongside the score. In future runs, I also plan to limit proposal length and ask for small targeted edits rather than full rewrites.
 
-### Why evaluation is still difficult
+### What the first runs showed
+
+Both runs improved the evaluation score and reduced the token count. The score came from my current evaluator, and each token reduction is measured against its own seed.
+
+| Seed | Evaluation score | Token count | Qualitative result |
+|---|---:|---:|---|
+| Existing prompt | 0.60 to 0.70 | -26.0% | Better than the guidelines-only result, but still close to the original prompt |
+| Guidelines only | 0.50 to 0.77 | -12.8% | Highest evaluation score, but worse responses when I tried it in the agent |
+
+On paper, the guidelines-only seed looked better. In practice, it was not. Its optimized prompt reached `0.77`, but the responses were worse when I tried it in the agent.
+
+The optimized version of the existing prompt performed better than the guidelines-only version. However, it still did not solve the weaknesses I was trying to address. Its response quality was broadly similar to the original prompt.
+
+These are early results from my current evaluation setup, not a general benchmark claim. I report only aggregate results here and omit the prompt text and evaluation cases. More importantly, the runs showed that a higher offline score did not necessarily mean a better response.
+
+### Why the score was not enough
 
 Consider a hypothetical recommendation system. This is only an example, not a description of my agent. A user might ask for the cheapest option, while the product policy could require the system to balance price with permitted preference signals and explain the trade-off.
 
 A deterministic evaluator could check hard constraints. An LLM judge could assess the recommendation and explanation. GEPA can optimize against those signals, but it cannot decide what the product should value. That policy must already be visible in the dataset and evaluator.
+
+My current hypothesis is that the dataset did not cover enough of the behavior I cared about. Two runs are not enough to prove that, but the mismatch is a warning. GEPA improved what my evaluator measured. It did not consistently improve the qualities that were missing from the dataset or rubric. In my setup, behavior that was never tested had no reliable signal to protect it.
 
 The [official FAQ recommends roughly 30 to 300 examples](https://gepa-ai.github.io/gepa/guides/faq/#can-gepa-work-with-very-few-examples) for better results. The number alone is not enough. For a tool-using agent, the data may also need the path from input to final answer:
 
@@ -173,18 +190,17 @@ The [trace guidance](https://gepa-ai.github.io/gepa/guides/faq/#how-should-i-ser
 
 This brought back a lesson from my year-long undergraduate internship in a computer vision lab. It was easy to focus on the model and training code, but dataset quality often decided what the model could learn. GEPA changes prompts instead of weights, but it still learns only from the examples and feedback I provide.
 
-### My next step
+### What I will do next
 
-I will start with a narrow experiment:
+The next experiment will focus on the evaluation setup rather than a larger prompt search:
 
-1. Keep the current agent flow and the smaller task model.
-2. Use the existing prompt as a baseline and optimize one prompt first.
-3. Build a small dataset with the relevant tool trajectory.
-4. Combine deterministic checks with an LLM judge.
-5. Track prompt length and use separate feedback, validation, and test data.
-6. Review accepted prompts and run regression cases before deployment.
+1. Turn the qualitative failures from these runs into new examples.
+2. Add edge cases and regression cases to separate feedback, validation, and test sets.
+3. Calibrate the evaluator against a small set of human-reviewed responses.
+4. Keep the existing prompt as the baseline and compare results on an untouched test set.
+5. Continue tracking token count and review each accepted prompt before deployment.
 
-I am still tuning the prompt, and I remain skeptical about whether the result will be reliable enough to adopt. My first goal is only to test one well-defined prompt. For now, the main bottleneck is not GEPA's mutation algorithm. It is building a dataset and evaluator that reward the behavior I actually want.
+I am still skeptical about whether the result will be reliable enough to adopt. For now, the main bottleneck is not GEPA's mutation algorithm. It is building a dataset and evaluator that reward the behavior I actually want.
 
 ### References
 
