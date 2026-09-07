@@ -122,9 +122,13 @@ script_includes:
     </dialog>
   {% endif %}
 
+  {% include adsense.html position='top' %}
+
   <div class="content">
     {{ content }}
   </div>
+
+  {% include adsense.html position='bottom' %}
 
   <div class="post-tail-wrapper text-muted">
     <!-- categories -->

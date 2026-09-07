@@ -104,6 +104,14 @@
   {% include js-selector.html lang=lang %}
 
   {% if jekyll.environment == 'production' %}
+    {% if site.adsense.client %}
+      <script
+        async
+        crossorigin="anonymous"
+        src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-{{ site.adsense.client }}"
+      ></script>
+    {% endif %}
+
     <!-- PWA -->
     {% if site.pwa.enabled %}
       <script

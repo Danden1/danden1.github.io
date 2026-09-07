@@ -1,0 +1,23 @@
+{% assign ad_slot = site.adsense.slots[include.position] %}
+
+{% if jekyll.environment == 'production' and site.adsense.client and ad_slot %}
+  <aside class="adsense adsense-{{ include.position }}" aria-label="Advertisement">
+    <ins
+      class="adsbygoogle"
+      style="display: block"
+      data-ad-client="ca-{{ site.adsense.client }}"
+      data-ad-slot="{{ ad_slot }}"
+      data-ad-format="auto"
+      data-full-width-responsive="true"
+    ></ins>
+    <script>
+      {% if include.position == 'top' %}
+        if (window.matchMedia('(min-width: 768px)').matches) {
+          (adsbygoogle = window.adsbygoogle || []).push({});
+        }
+      {% else %}
+        (adsbygoogle = window.adsbygoogle || []).push({});
+      {% endif %}
+    </script>
+  </aside>
+{% endif %}

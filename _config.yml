@@ -73,6 +73,14 @@ analytics:
   fathom:
     id: # fill in your Fathom Site ID
 
+# Google AdSense
+# Create responsive display ad units in AdSense and fill in their slot IDs.
+adsense:
+  client: pub-7780931961240870
+  slots:
+    top: # desktop only
+    bottom: # desktop and mobile
+
 # Page views settings
 pageviews:
   provider: # now only supports 'goatcounter'

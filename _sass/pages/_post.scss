@@ -3,6 +3,21 @@
 @use '../abstracts/mixins' as mx;
 @use '../abstracts/placeholders';
 
+.adsense {
+  width: 100%;
+  margin: 2rem 0;
+  overflow: hidden;
+  text-align: center;
+}
+
+.adsense-top {
+  display: none;
+
+  @media (min-width: 768px) {
+    display: block;
+  }
+}
+
 %-btn-post-nav {
   width: 50%;
   position: relative;
